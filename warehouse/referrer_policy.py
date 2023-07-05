@@ -1,22 +1,26 @@
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-# http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+import typing
+
+from pyramid.request import Request
 
 
-def referrer_policy_tween_factory(handler, registry):
-    def referrer_policy_tween(request):
+def referrer_policy_tween_factory(
+    handler: typing.Callable[[Request], Response], registry: typing.Any
+) -> typing.Callable[[Request], Response]:
+    """Returns the tween function that adds a Referrer-Policy header to the response.
+
+    :param handler: The next tween or handler in the pyramid middleware chain.
+    :param registry: The application registry.
+    :return: The tween function that adds the Referrer-Policy header to the response.
+    """
+
+    def referrer_policy_tween(request: Request) -> Response:
+        """Adds a Referrer-Policy header to the response.
+
+        :param request: The pyramid request.
+        :return: The response with the added Referrer-Policy header.
+        """
         response = handler(request)
-
         response.headers["Referrer-Policy"] = "origin-when-cross-origin"
-
         return response
 
     return referrer_policy_tween
